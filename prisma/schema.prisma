@@ -11,18 +11,18 @@ datasource db {
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?  @db.Text
-  access_token       String?  @db.Text
-  expires_in         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?  @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_in        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -45,6 +45,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  profile       Profile?
 }
 
 model VerificationToken {
@@ -53,4 +54,36 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Profile {
+  id         Int      @id @default(autoincrement())
+  userId     String   @unique @default(cuid())
+  user       User     @relation(fields: [userId], references: [id])
+  username   String   @unique
+  public     Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  imageUrl   String?
+  bio        String?
+  socials    Social[]
+}
+
+model Social {
+  id         Int          @id @default(autoincrement())
+  url        String
+  profileId  Int
+  profile    Profile      @relation(fields: [profileId], references: [id])
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+  typeId     Int
+  type       Social_Types @relation(fields: [typeId], references: [id])
+}
+
+model Social_Types {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  socials    Social[]
 }
