@@ -1,9 +1,11 @@
 <script lang="ts">
-  import type { ProfileBody } from "../../lib/schema";
+  import type { ProfileBody } from "$lib/schema";
   import InfoForm from "../../components/infoForm.svelte";
   import { page } from "$app/stores";
   import SocialForm from "../../components/socialForm.svelte";
   import type { PageServerData } from "./$types";
+  import type { FormStep } from "$lib/types";
+  import Profile from "../../components/profile.svelte";
 
   export let data: PageServerData;
 
@@ -17,25 +19,32 @@
     socials: [{ url: "", typeId: data.socialTypes[0].id }],
   };
 
-  let infoFormFinished = false;
+  let step: FormStep = 0;
   let username = "";
 </script>
 
-<section>
-  <div>
-    {#if !infoFormFinished}
-      <InfoForm {profileData} bind:infoFormFinished bind:username />
-    {:else}
-      <button class="secondary" on:click={() => (infoFormFinished = false)}
-        >Back</button
-      >
-      <SocialForm {profileData} socialTypes={data.socialTypes} />
-    {/if}
-  </div>
-</section>
+{#if step === 0}
+  <section class="center">
+    <div>
+      <InfoForm {profileData} bind:step bind:username />
+    </div>
+  </section>
+{:else if step === 1}
+  <section class="center">
+    <div>
+      <button class="secondary" on:click={() => (step = 0)}>Back</button>
+      <SocialForm {profileData} socialTypes={data.socialTypes} bind:step />
+    </div>
+  </section>
+{:else}
+  <section>
+    <button class="secondary" on:click={() => (step = 1)}>Back</button>
+    <Profile {profileData} />
+  </section>
+{/if}
 
 <style>
-  section {
+  .center {
     height: 100%;
     display: flex;
     justify-content: center;

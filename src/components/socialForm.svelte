@@ -1,12 +1,16 @@
 <script lang="ts">
   import type { ProfileBody, SocialEntry } from "$lib/schema";
+  import type { FormStep } from "$lib/types";
   import type { Social_Types } from "@prisma/client";
   import SocialEntryInput from "./socialEntryInput.svelte";
 
   export let profileData: ProfileBody;
   export let socialTypes: Social_Types[];
+  export let step: FormStep;
 
-  function submitHandler() {}
+  function submitHandler() {
+    step = 2;
+  }
 
   function addInputHandler() {
     if (profileData.socials.length === 15) {
