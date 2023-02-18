@@ -61,7 +61,7 @@ model Profile {
   userId     String   @unique @default(cuid())
   user       User     @relation(fields: [userId], references: [id])
   username   String   @unique
-  public     Boolean  @default(true)
+  isPublic   Boolean  @default(true)
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   imageUrl   String?

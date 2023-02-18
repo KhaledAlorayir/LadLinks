@@ -4,7 +4,7 @@
 <section>
   <div>
     <h4>All your social links in one page 🙌</h4>
-    <a href="/" role="button">Get Started</a>
+    <a href="/create" role="button">Get Started</a>
   </div>
 </section>
 

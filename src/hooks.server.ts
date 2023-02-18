@@ -1,7 +1,7 @@
 import { SvelteKitAuth } from "@auth/sveltekit";
 import Discord from "@auth/core/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "../prisma/client";
+import prisma from "./lib/prisma";
 import { DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET } from "$env/static/private";
 
 export const handle = SvelteKitAuth({

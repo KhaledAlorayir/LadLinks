@@ -1,4 +1,4 @@
-import prisma from "../../prisma/client";
+import prisma from "./prisma";
 
 async function typesSeeder() {
   const socialTypesData = [
@@ -14,6 +14,7 @@ async function typesSeeder() {
     { name: "wishlist" },
     { name: "youtube" },
     { name: "twitch" },
+    { name: "other" },
   ];
 
   await prisma.social_Types.createMany({ data: socialTypesData });
