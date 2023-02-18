@@ -26,7 +26,9 @@ export const POST = (async ({ locals, request }) => {
     throw error(400, { message: "user already has a profile" });
   }
 
-  if (await isAvailable(validated.data.username)) {
+  const available = await isAvailable(validated.data.username);
+
+  if (!available) {
     throw error(400, { message: "username is used" });
   }
 
@@ -48,6 +50,7 @@ export const POST = (async ({ locals, request }) => {
   return new Response(null, { status: 201 });
 }) satisfies RequestHandler;
 
+//TODO fix is available
 export const PUT = (async ({ locals, request }) => {
   const session = await locals.getSession();
   const validated = ProfileBodySchema.safeParse(await request.json());

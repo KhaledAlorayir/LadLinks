@@ -1,39 +1,35 @@
 <script lang="ts">
-  import type { ProfileBody } from "$lib/schema";
-  //figure out how to get label here and make reusable between create & view
-  export let profileData: {
-    bio?: string | null | undefined;
-    username: string;
-    isPublic: boolean;
-    imageUrl: string;
-    socials: {
-      url: string;
-      typeId: number;
-      type: string;
-    }[];
-  };
+  import type { Profile } from "$lib/types";
+
+  export let profileData: Profile;
 </script>
 
 <section>
-  <div>
+  <header>
     <img src={profileData.imageUrl} alt="profile" />
-    <h5>{profileData.username}</h5>
-    {#if profileData.bio?.length}
-      <p>{profileData.bio}</p>
+    {#if !profileData.bio?.length}
+      <h5>{profileData.username}</h5>
+    {:else}
+      <hgroup>
+        <h5>{profileData.username}</h5>
+        <h6>{profileData.bio}</h6>
+      </hgroup>
     {/if}
-  </div>
-  <div>
-    <ul>
-      {#each profileData.socials as social, i (i)}
-        <li><a href={social.url} target="_blank" rel="noreferrer">Link</a></li>
-      {/each}
-    </ul>
-  </div>
+  </header>
+  <ul>
+    {#each profileData.socials as social, i (i)}
+      <li>
+        <a href={social.url} target="_blank" rel="noreferrer">{social.type}</a>
+      </li>
+    {/each}
+  </ul>
 </section>
 
 <style>
   section {
-    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   img {
@@ -48,5 +44,9 @@
   li {
     list-style-type: none;
     list-style: none;
+  }
+
+  header {
+    text-align: center;
   }
 </style>

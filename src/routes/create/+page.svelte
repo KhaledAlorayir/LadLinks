@@ -6,8 +6,20 @@
   import type { PageServerData } from "./$types";
   import type { FormStep } from "$lib/types";
   import Profile from "../../components/profile.svelte";
+  import type { Profile as ProfileType } from "$lib/types";
+  import { createMutation } from "@tanstack/svelte-query";
+  import axios, { AxiosError } from "axios";
+  import { goto } from "$app/navigation";
 
   export let data: PageServerData;
+
+  /*
+    TODO:
+    1- move mutation
+    2- convert username lookup into axios
+    3- fix isavilable in put request
+    4- create PR
+  */
 
   let profileData: ProfileBody = {
     username: "",
@@ -19,11 +31,27 @@
     socials: [{ url: "", typeId: data.socialTypes[0].id }],
   };
 
+  let conformationData: ProfileType | null = null;
   let step: FormStep = 0;
   let username = "";
+
+  const createProfile = createMutation({
+    mutationFn: async (profileData: ProfileBody) => {
+      profileData.bio = profileData.bio?.trim().length
+        ? profileData.bio.trim()
+        : null;
+      return axios.post("/api/profile", profileData);
+    },
+    onError: (err: AxiosError) => alert(err.message),
+    onSuccess: () => goto("/"),
+  });
 </script>
 
-{#if step === 0}
+{#if $createProfile.isLoading}
+  <section class="center">
+    <progress />
+  </section>
+{:else if step === 0}
   <section class="center">
     <div>
       <InfoForm {profileData} bind:step bind:username />
@@ -32,14 +60,25 @@
 {:else if step === 1}
   <section class="center">
     <div>
-      <button class="secondary" on:click={() => (step = 0)}>Back</button>
-      <SocialForm {profileData} socialTypes={data.socialTypes} bind:step />
+      <button class="secondary btn-small" on:click={() => (step = 0)}
+        >Back</button
+      >
+      <SocialForm
+        {profileData}
+        socialTypes={data.socialTypes}
+        bind:conformationData
+        bind:step
+      />
     </div>
   </section>
-{:else}
+{:else if conformationData}
   <section>
-    <button class="secondary" on:click={() => (step = 1)}>Back</button>
-    <Profile {profileData} />
+    <div class="controls">
+      <button class="secondary" on:click={() => (step = 1)}>Back</button>
+      <button on:click={() => $createProfile.mutate(profileData)}>Create</button
+      >
+    </div>
+    <Profile profileData={conformationData} />
   </section>
 {/if}
 
@@ -55,8 +94,19 @@
     width: 100%;
   }
 
-  .secondary {
+  .btn-small {
     width: auto;
     margin-bottom: 2rem;
+  }
+
+  .controls button {
+    width: auto;
+  }
+
+  .controls {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>
