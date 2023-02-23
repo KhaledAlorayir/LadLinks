@@ -3,12 +3,6 @@
   import type { PageServerData } from "./$types";
 
   export let data: PageServerData;
-
-  /*
-    TODO: 
-    - image should'nt be nullable / not given generate one
-    - PR
-  */
 </script>
 
 <section>

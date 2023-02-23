@@ -3,6 +3,7 @@ import type { RequestHandler } from "./$types";
 import { ProfileBodySchema } from "$lib/schema";
 import prisma from "$lib/prisma";
 import { isAvailable } from "$lib/util/usernameCheck";
+import { getImage } from "$lib/util/profileImage";
 
 export const POST = (async ({ locals, request }) => {
   const session = await locals.getSession();
@@ -37,7 +38,7 @@ export const POST = (async ({ locals, request }) => {
   await prisma.profile.create({
     data: {
       username,
-      imageUrl,
+      imageUrl: await getImage(imageUrl, username),
       bio,
       isPublic,
       userId: session.user.uid,
@@ -83,7 +84,7 @@ export const PUT = (async ({ locals, request }) => {
   await prisma.profile.update({
     data: {
       username,
-      imageUrl,
+      imageUrl: await getImage(imageUrl),
       bio,
       isPublic,
       userId: session.user.uid,
