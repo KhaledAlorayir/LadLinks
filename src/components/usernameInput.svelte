@@ -3,6 +3,7 @@
   import { stopTyping } from "$lib/on-stop-typing";
   import { createQuery } from "@tanstack/svelte-query";
   import type { ProfileBody } from "$lib/schema";
+  import axios from "axios";
 
   let usernameLookupQuery = "";
   export let username: string;
@@ -11,15 +12,15 @@
   $: query = createQuery({
     queryKey: ["usernameLookup"],
     queryFn: async () => {
-      const res = await fetch(
-        "/api/profile/username?" +
-          new URLSearchParams({ q: usernameLookupQuery.trim() })
+      const { data } = await axios.get<{ available: boolean }>(
+        "/api/profile/username",
+        {
+          params: {
+            q: usernameLookupQuery,
+          },
+        }
       );
-
-      if (!res.ok) {
-        throw new Error("server error");
-      }
-      return (await res.json()) as { available: boolean };
+      return data;
     },
     enabled: !!usernameLookupQuery.trim(),
     onSuccess: ({ available }) => {

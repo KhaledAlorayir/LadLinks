@@ -1,9 +1,13 @@
 <script lang="ts">
-  import type { ProfileBody } from "../../lib/schema";
+  import type { ProfileBody } from "$lib/schema";
   import InfoForm from "../../components/infoForm.svelte";
   import { page } from "$app/stores";
   import SocialForm from "../../components/socialForm.svelte";
   import type { PageServerData } from "./$types";
+  import type { FormStep } from "$lib/types";
+  import Profile from "../../components/profile.svelte";
+  import type { Profile as ProfileType } from "$lib/types";
+  import useCreateProfile from "$lib/api/useCreateProfile";
 
   export let data: PageServerData;
 
@@ -17,25 +21,49 @@
     socials: [{ url: "", typeId: data.socialTypes[0].id }],
   };
 
-  let infoFormFinished = false;
+  let conformationData: ProfileType | null = null;
+  let step: FormStep = 0;
   let username = "";
+  const createProfile = useCreateProfile();
 </script>
 
-<section>
-  <div>
-    {#if !infoFormFinished}
-      <InfoForm {profileData} bind:infoFormFinished bind:username />
-    {:else}
-      <button class="secondary" on:click={() => (infoFormFinished = false)}
+{#if $createProfile.isLoading}
+  <section class="center">
+    <progress />
+  </section>
+{:else if step === 0}
+  <section class="center">
+    <div>
+      <InfoForm {profileData} bind:step bind:username />
+    </div>
+  </section>
+{:else if step === 1}
+  <section class="center">
+    <div>
+      <button class="secondary btn-small" on:click={() => (step = 0)}
         >Back</button
       >
-      <SocialForm {profileData} socialTypes={data.socialTypes} />
-    {/if}
-  </div>
-</section>
+      <SocialForm
+        {profileData}
+        socialTypes={data.socialTypes}
+        bind:conformationData
+        bind:step
+      />
+    </div>
+  </section>
+{:else if conformationData}
+  <section>
+    <div class="controls">
+      <button class="secondary" on:click={() => (step = 1)}>Back</button>
+      <button on:click={() => $createProfile.mutate(profileData)}>Create</button
+      >
+    </div>
+    <Profile profileData={conformationData} />
+  </section>
+{/if}
 
 <style>
-  section {
+  .center {
     height: 100%;
     display: flex;
     justify-content: center;
@@ -46,8 +74,19 @@
     width: 100%;
   }
 
-  .secondary {
+  .btn-small {
     width: auto;
     margin-bottom: 2rem;
+  }
+
+  .controls button {
+    width: auto;
+  }
+
+  .controls {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 </style>

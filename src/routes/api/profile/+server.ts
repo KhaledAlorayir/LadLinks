@@ -26,7 +26,9 @@ export const POST = (async ({ locals, request }) => {
     throw error(400, { message: "user already has a profile" });
   }
 
-  if (await isAvailable(validated.data.username)) {
+  const available = await isAvailable(validated.data.username);
+
+  if (!available) {
     throw error(400, { message: "username is used" });
   }
 
@@ -70,10 +72,9 @@ export const PUT = (async ({ locals, request }) => {
     throw error(400, { message: "user has no profile" });
   }
 
-  if (
-    (await isAvailable(validated.data.username)) &&
-    validated.data.username !== profile.username
-  ) {
+  const available = await isAvailable(validated.data.username);
+
+  if (!available && validated.data.username !== profile.username) {
     throw error(400, { message: "username is used" });
   }
 

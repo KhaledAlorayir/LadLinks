@@ -1,16 +1,17 @@
 <script lang="ts">
   import type { ProfileBody } from "$lib/schema";
+  import type { FormStep } from "$lib/types";
   import UsernameInput from "./usernameInput.svelte";
 
   export let profileData: ProfileBody;
-  export let infoFormFinished: boolean;
+  export let step: FormStep;
   export let username: string;
 
   function submitHandler() {
     if (!profileData.username.trim()) {
       username = "";
     } else {
-      infoFormFinished = true;
+      step = 1;
     }
   }
 </script>

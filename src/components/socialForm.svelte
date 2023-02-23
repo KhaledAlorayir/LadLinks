@@ -1,12 +1,26 @@
 <script lang="ts">
   import type { ProfileBody, SocialEntry } from "$lib/schema";
+  import type { FormStep } from "$lib/types";
   import type { Social_Types } from "@prisma/client";
   import SocialEntryInput from "./socialEntryInput.svelte";
+  import type { Profile as ProfileType } from "$lib/types";
 
   export let profileData: ProfileBody;
   export let socialTypes: Social_Types[];
+  export let step: FormStep;
+  export let conformationData: ProfileType | null;
 
-  function submitHandler() {}
+  function submitHandler() {
+    conformationData = {
+      ...profileData,
+      socials: profileData.socials.map((social) => ({
+        ...social,
+        type:
+          socialTypes.find(({ id }) => id === social.typeId)?.name ?? "other",
+      })),
+    };
+    step = 2;
+  }
 
   function addInputHandler() {
     if (profileData.socials.length === 15) {
