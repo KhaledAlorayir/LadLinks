@@ -29,7 +29,7 @@
   </label>
   <label for="image">
     Image
-    <input type="url" name="image" bind:value={profileData.imageUrl} required />
+    <input type="url" name="image" bind:value={profileData.imageUrl} />
   </label>
   <button type="submit">Next</button>
 </form>

@@ -12,6 +12,6 @@ export default function () {
       return axios.post("/api/profile", profileData);
     },
     onError: (err: AxiosError) => alert(err.message),
-    onSuccess: () => goto("/"),
+    onSuccess: (_, variables) => goto(`/${variables.username.trim()}`),
   });
 }

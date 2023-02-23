@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
 import { ProfileBodySchema } from "$lib/schema";
 import prisma from "$lib/prisma";
-import { isAvailable } from "$lib/usernameCheck";
+import { isAvailable } from "$lib/util/usernameCheck";
 
 export const POST = (async ({ locals, request }) => {
   const session = await locals.getSession();

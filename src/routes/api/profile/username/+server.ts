@@ -1,15 +1,11 @@
 import type { RequestHandler } from "./$types";
 import { z } from "zod";
 import { error, json } from "@sveltejs/kit";
-import { isAvailable } from "$lib/usernameCheck";
+import { isAvailable } from "$lib/util/usernameCheck";
+import { UsernameSchema } from "$lib/schema";
 
 export const GET = (async ({ url }) => {
-  const validated = z
-    .string()
-    .trim()
-    .min(1)
-    .max(40)
-    .safeParse(url.searchParams.get("q"));
+  const validated = UsernameSchema.safeParse(url.searchParams.get("q"));
 
   if (!validated.success) {
     throw error(400);
