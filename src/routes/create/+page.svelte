@@ -7,19 +7,9 @@
   import type { FormStep } from "$lib/types";
   import Profile from "../../components/profile.svelte";
   import type { Profile as ProfileType } from "$lib/types";
-  import { createMutation } from "@tanstack/svelte-query";
-  import axios, { AxiosError } from "axios";
-  import { goto } from "$app/navigation";
+  import useCreateProfile from "$lib/api/useCreateProfile";
 
   export let data: PageServerData;
-
-  /*
-    TODO:
-    1- move mutation
-    2- convert username lookup into axios
-    3- fix isavilable in put request
-    4- create PR
-  */
 
   let profileData: ProfileBody = {
     username: "",
@@ -34,17 +24,7 @@
   let conformationData: ProfileType | null = null;
   let step: FormStep = 0;
   let username = "";
-
-  const createProfile = createMutation({
-    mutationFn: async (profileData: ProfileBody) => {
-      profileData.bio = profileData.bio?.trim().length
-        ? profileData.bio.trim()
-        : null;
-      return axios.post("/api/profile", profileData);
-    },
-    onError: (err: AxiosError) => alert(err.message),
-    onSuccess: () => goto("/"),
-  });
+  const createProfile = useCreateProfile();
 </script>
 
 {#if $createProfile.isLoading}
