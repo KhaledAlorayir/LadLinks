@@ -4,13 +4,14 @@
   import type { Social_Types } from "@prisma/client";
   import SocialEntryInput from "./socialEntryInput.svelte";
   import type { Profile as ProfileType } from "$lib/types";
+  import { getImage } from "$lib/util/profileImage";
 
   export let profileData: ProfileBody;
   export let socialTypes: Social_Types[];
   export let step: FormStep;
   export let conformationData: ProfileType | null;
 
-  function submitHandler() {
+  async function submitHandler() {
     conformationData = {
       ...profileData,
       socials: profileData.socials.map((social) => ({
@@ -18,6 +19,7 @@
         type:
           socialTypes.find(({ id }) => id === social.typeId)?.name ?? "other",
       })),
+      imageUrl: await getImage(profileData.imageUrl, profileData.username),
     };
     step = 2;
   }

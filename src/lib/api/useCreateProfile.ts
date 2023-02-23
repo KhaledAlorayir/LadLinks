@@ -9,9 +9,13 @@ export default function () {
       profileData.bio = profileData.bio?.trim().length
         ? profileData.bio.trim()
         : null;
+
+      profileData.imageUrl = profileData.imageUrl?.length
+        ? profileData.imageUrl
+        : null;
       return axios.post("/api/profile", profileData);
     },
     onError: (err: AxiosError) => alert(err.message),
-    onSuccess: () => goto("/"),
+    onSuccess: (_, variables) => goto(`/${variables.username.trim()}`),
   });
 }

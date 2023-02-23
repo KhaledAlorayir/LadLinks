@@ -1,6 +1,6 @@
 <script lang="ts">
   //@ts-nocheck
-  import { stopTyping } from "$lib/on-stop-typing";
+  import { stopTyping } from "$lib/util/on-stop-typing";
   import { createQuery } from "@tanstack/svelte-query";
   import type { ProfileBody } from "$lib/schema";
   import axios from "axios";

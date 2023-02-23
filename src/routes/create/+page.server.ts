@@ -5,10 +5,19 @@ import { redirect } from "@sveltejs/kit";
 export const load = (async ({ locals }) => {
   const session = await locals.getSession();
 
-  if (!session?.user) {
+  if (!session?.user || !session.user.uid) {
     throw redirect(303, "/auth/signin");
   }
-  // HANDLE IF USER ALREADY HAS A PROFILE (navigate to profile page)
+
+  const profile = await prisma.profile.findUnique({
+    where: {
+      userId: session.user.uid,
+    },
+  });
+
+  if (profile) {
+    throw redirect(303, `/${profile.username}`);
+  }
 
   const socialTypes = await prisma.social_Types.findMany();
   return {
