@@ -2,8 +2,10 @@
   import Profile from "../../components/profile.svelte";
   import type { PageServerData } from "./$types";
   import { page } from "$app/stores";
+  import useDeleteProfile from "$lib/api/useDeleteProfile";
 
   export let data: PageServerData;
+  const deleteProfile = useDeleteProfile();
 </script>
 
 <article>
@@ -13,6 +15,10 @@
         <summary aria-haspopup="listbox">✍</summary>
         <ul role="listbox">
           <li><a href={`/edit`}>Edit Profile</a></li>
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <li class="delete" on:click={() => $deleteProfile.mutate()}>
+            Delete Profile
+          </li>
         </ul>
       </details>
     </nav>
@@ -23,5 +29,15 @@
 <style>
   nav {
     justify-content: flex-end;
+  }
+
+  .delete {
+    cursor: pointer;
+    transition: all 200ms;
+  }
+
+  .delete:hover {
+    background-color: rgb(196, 70, 70);
+    color: black;
   }
 </style>

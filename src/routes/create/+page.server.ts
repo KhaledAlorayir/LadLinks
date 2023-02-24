@@ -1,17 +1,14 @@
 import type { PageServerLoad } from "./$types";
 import prisma from "../../lib/prisma";
 import { redirect } from "@sveltejs/kit";
+import { AuthenticatePage } from "$lib/util/authenticate";
 
 export const load = (async ({ locals }) => {
-  const session = await locals.getSession();
-
-  if (!session?.user || !session.user.uid) {
-    throw redirect(303, "/auth/signin");
-  }
+  const userId = await AuthenticatePage(locals);
 
   const profile = await prisma.profile.findUnique({
     where: {
-      userId: session.user.uid,
+      userId,
     },
   });
 
