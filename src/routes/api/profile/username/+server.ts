@@ -1,5 +1,4 @@
 import type { RequestHandler } from "./$types";
-import { z } from "zod";
 import { error, json } from "@sveltejs/kit";
 import { isAvailable } from "$lib/util/usernameCheck";
 import { UsernameSchema } from "$lib/schema";

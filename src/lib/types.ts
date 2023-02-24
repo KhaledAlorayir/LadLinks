@@ -10,4 +10,5 @@ export type Profile = {
     typeId: number;
     type: string;
   }[];
+  userId?: string;
 };
