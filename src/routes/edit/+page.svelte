@@ -1,30 +1,33 @@
 <script lang="ts">
   import type { ProfileBody } from "$lib/schema";
   import InfoForm from "../../components/infoForm.svelte";
-  import { page } from "$app/stores";
   import SocialForm from "../../components/socialForm.svelte";
   import type { PageServerData } from "./$types";
   import type { FormStep } from "$lib/types";
   import Profile from "../../components/profile.svelte";
   import type { Profile as ProfileType } from "$lib/types";
   import useProfile from "$lib/api/useProfile";
+  import { editedUsername } from "$lib/store";
+  import { onMount } from "svelte";
 
   export let data: PageServerData;
 
+  onMount(() => {
+    editedUsername.set(data.profile.username);
+  });
+
   let profileData: ProfileBody = {
-    username: "",
-    imageUrl: $page.data.session?.user?.image
-      ? $page.data.session?.user?.image
-      : "",
-    isPublic: true,
-    bio: "",
-    socials: [{ url: "", typeId: data.socialTypes[0].id }],
+    username: data.profile.username,
+    imageUrl: data.profile.imageUrl,
+    isPublic: data.profile.isPublic,
+    bio: data.profile.bio,
+    socials: data.profile.socials,
   };
 
   let conformationData: ProfileType | null = null;
   let step: FormStep = 0;
-  let username = "";
-  const createProfile = useProfile();
+  let username = data.profile.username;
+  const createProfile = useProfile(true);
 </script>
 
 {#if $createProfile.isLoading}
@@ -55,7 +58,8 @@
   <section>
     <div class="controls">
       <button class="secondary" on:click={() => (step = 1)}>Back</button>
-      <button on:click={() => $createProfile.mutate(profileData)}>Create</button
+      <button on:click={() => $createProfile.mutate(profileData)}
+        >{$editedUsername ? "Edit" : "Create"}</button
       >
     </div>
     <Profile profileData={conformationData} />

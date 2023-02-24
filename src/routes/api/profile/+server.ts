@@ -79,12 +79,18 @@ export const PUT = (async ({ locals, request }) => {
     throw error(400, { message: "username is used" });
   }
 
+  await prisma.social.deleteMany({
+    where: {
+      profileId: profile.id,
+    },
+  });
+
   const { imageUrl, username, socials, bio, isPublic } = validated.data;
 
   await prisma.profile.update({
     data: {
       username,
-      imageUrl: await getImage(imageUrl),
+      imageUrl: await getImage(imageUrl, username),
       bio,
       isPublic,
       userId: session.user.uid,

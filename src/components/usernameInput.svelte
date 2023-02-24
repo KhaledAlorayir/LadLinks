@@ -4,6 +4,7 @@
   import { createQuery } from "@tanstack/svelte-query";
   import type { ProfileBody } from "$lib/schema";
   import axios from "axios";
+  import { editedUsername } from "$lib/store";
 
   let usernameLookupQuery = "";
   export let username: string;
@@ -20,6 +21,10 @@
           },
         }
       );
+      data.available =
+        data.available ||
+        usernameLookupQuery.trim().toLocaleLowerCase() ===
+          $editedUsername?.toLocaleLowerCase();
       return data;
     },
     enabled: !!usernameLookupQuery.trim(),

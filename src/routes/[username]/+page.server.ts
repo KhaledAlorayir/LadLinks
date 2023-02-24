@@ -33,6 +33,7 @@ export const load = (async ({ params, locals }) => {
   }
 
   const parsedProfile: Profile = {
+    userId: profile.userId,
     username: profile.username,
     imageUrl: profile.imageUrl,
     isPublic: profile.isPublic,
