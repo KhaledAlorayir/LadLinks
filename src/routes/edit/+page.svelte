@@ -14,6 +14,7 @@
 
   onMount(() => {
     editedUsername.set(data.profile.username);
+    return () => editedUsername.set(null);
   });
 
   let profileData: ProfileBody = {

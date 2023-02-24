@@ -4,14 +4,11 @@ import { ProfileBodySchema } from "$lib/schema";
 import prisma from "$lib/prisma";
 import { isAvailable } from "$lib/util/usernameCheck";
 import { getImage } from "$lib/util/profileImage";
+import { AuthenticateEndpoint } from "$lib/util/authenticate";
 
 export const POST = (async ({ locals, request }) => {
-  const session = await locals.getSession();
+  const userId = await AuthenticateEndpoint(locals);
   const validated = ProfileBodySchema.safeParse(await request.json());
-
-  if (!session?.user || !session.user.uid) {
-    throw error(401);
-  }
 
   if (!validated.success) {
     throw error(400);
@@ -19,7 +16,7 @@ export const POST = (async ({ locals, request }) => {
 
   const profile = await prisma.profile.findUnique({
     where: {
-      userId: session.user.uid,
+      userId,
     },
   });
 
@@ -41,7 +38,7 @@ export const POST = (async ({ locals, request }) => {
       imageUrl: await getImage(imageUrl, username),
       bio,
       isPublic,
-      userId: session.user.uid,
+      userId,
       socials: {
         createMany: { data: socials },
       },
@@ -52,12 +49,8 @@ export const POST = (async ({ locals, request }) => {
 }) satisfies RequestHandler;
 
 export const PUT = (async ({ locals, request }) => {
-  const session = await locals.getSession();
+  const userId = await AuthenticateEndpoint(locals);
   const validated = ProfileBodySchema.safeParse(await request.json());
-
-  if (!session?.user || !session.user.uid) {
-    throw error(401);
-  }
 
   if (!validated.success) {
     throw error(400);
@@ -65,7 +58,7 @@ export const PUT = (async ({ locals, request }) => {
 
   const profile = await prisma.profile.findUnique({
     where: {
-      userId: session.user.uid,
+      userId,
     },
   });
 
@@ -93,11 +86,32 @@ export const PUT = (async ({ locals, request }) => {
       imageUrl: await getImage(imageUrl, username),
       bio,
       isPublic,
-      userId: session.user.uid,
       socials: {
         createMany: { data: socials },
       },
     },
+    where: {
+      id: profile.id,
+    },
+  });
+
+  return new Response(null, { status: 200 });
+}) satisfies RequestHandler;
+
+export const DELETE = (async ({ locals }) => {
+  const userId = await AuthenticateEndpoint(locals);
+
+  const profile = await prisma.profile.findUnique({
+    where: {
+      userId,
+    },
+  });
+
+  if (!profile) {
+    throw error(404);
+  }
+
+  await prisma.profile.delete({
     where: {
       id: profile.id,
     },

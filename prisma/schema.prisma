@@ -73,7 +73,7 @@ model Social {
   id         Int          @id @default(autoincrement())
   url        String
   profileId  Int
-  profile    Profile      @relation(fields: [profileId], references: [id])
+  profile    Profile      @relation(fields: [profileId], references: [id], onDelete: Cascade)
   created_at DateTime     @default(now())
   updated_at DateTime     @updatedAt
   typeId     Int
